@@ -6,8 +6,8 @@ package main
 import (
 	"encoding/json"
 	"fmt"
+	"io/ioutil"
 	"log"
-	"os"
 	"strconv"
 
 	"github.com/gocolly/colly"
@@ -43,8 +43,20 @@ func main() {
 	})
 	collector.Visit("https://www.factretriever.com/dog-facts")
 
-	enc := json.NewEncoder(os.Stdout)
-	enc.SetIndent("", " ")
-	enc.Encode(allFacts)
+	writeJSON(allFacts)
 
+	/*
+		enc := json.NewEncoder(os.Stdout)
+		enc.SetIndent("", " ")
+		enc.Encode(allFacts)
+	*/
+}
+
+func writeJSON(data []Fact) {
+	file, err := json.MarshalIndent(data, "", " ")
+	if err != nil {
+		log.Println("Unable to create JSON file")
+		return
+	}
+	_ = ioutil.WriteFile("rihnofacts.json", file, 0644)
 }
