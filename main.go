@@ -4,8 +4,10 @@
 package main
 
 import (
+	"encoding/json"
 	"fmt"
 	"log"
+	"os"
 	"strconv"
 
 	"github.com/gocolly/colly"
@@ -22,7 +24,7 @@ func main() {
 	collector := colly.NewCollector(
 		colly.AllowedDomains("factretriever.com", "www.factretriever.com"),
 	)
-	collector.OnHTML("factsList li", func(element *colly.HTMLElement) {
+	collector.OnHTML(".factsList li", func(element *colly.HTMLElement) {
 		factId, err := strconv.Atoi(element.Attr("id"))
 		if err != nil {
 			log.Println("Could not get id")
@@ -40,4 +42,9 @@ func main() {
 		fmt.Println("Visiting", request.URL.String())
 	})
 	collector.Visit("https://www.factretriever.com/dog-facts")
+
+	enc := json.NewEncoder(os.Stdout)
+	enc.SetIndent("", " ")
+	enc.Encode(allFacts)
+
 }
